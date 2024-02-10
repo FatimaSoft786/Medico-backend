@@ -19,7 +19,7 @@ const register = async(req,res)=>{
 
         let check = await model.findOne({email: req.body.email});
         if(check){
-            res.status(400).json("Sorry a user with this email already exist")
+            res.status(400).json({error: true,message: "Sorry a user with this email already exist"})
         }else{
             const salt = await bcrypt.genSalt(10);
             const securePass = await bcrypt.hash(req.body.password,salt)
@@ -40,15 +40,15 @@ const register = async(req,res)=>{
             };
             transporter.sendMail(mailOption,function(error){
           if(error){
-            res.status(404).json(error)
+            res.status(404).json({error: true,message: error})
           }else{
-            res.status(200).json("Please check your email ")
+            res.status(200).json({error: false,message: "Please check your email"})
           }
             });
         }
         
     } catch (error) {
-        res.status(500).json(error.message);
+        res.status(500).json({error: true,message: error.message});
     }
 };
 
@@ -80,17 +80,17 @@ const verifyOtp = async(req,res)=>{
         if(user){
             const isExpired = isOTPExpired(user.updatedAt);
             if(isExpired){
-                 res.status(404).json("Your otp is expired")
+                 res.status(404).json({error: true,message: "Your otp is expired"})
             }else{
                 const data = await model.findByIdAndUpdate(
                     {_id: user._id},
                     {$set: {otp: ""}},
                     {new: true});
-                    res.status(200).json(data);
+                    res.status(200).json({error: false,message: data});
             }
         }
     } catch (error) {
-        res.status(500).json(error.message)
+        res.status(500).json({error: true,message: error.message})
     }
 };
 
