@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs")
-const model = require("../Model/User");
+const model = require("../Model/Doctor");
 const generateOTP = require("../service/generateOtp");
 const nodemailer = require("nodemailer");
 const moment = require("moment")
@@ -12,7 +12,7 @@ let transporter = nodemailer.createTransport({
         user: process.env.SMTP_MAIL,
         pass: process.env.SMTP_PASSWORD
     }
-})
+});
 
 const register = async(req,res)=>{
     try {
@@ -94,103 +94,29 @@ const verifyOtp = async(req,res)=>{
     }
 };
 
-const checkEmail = async(req,res)=>{
+ const updateDoctorInfo = async(req,res)=>{
+    const {id} = req.params;
+    console.log(req.body);
     try {
         
-     const user = await model.findOne({email: req.body.email});
-     if(!user){
-        return res.status(400).json("User with this email does not exist")
-     }else {
-        const otp = generateOTP();
-           await model.findByIdAndUpdate(
-                    {_id: user._id},
-                    {$set: {otp: otp}},
-                    {new: true});
-          let mailOption = {
-                from: process.env.SMTP_MAIL,
-                to: req.body.email,
-                subject: "Otp verification",
-                text: `Your otp is: ${otp} will expire after 10 minute`
-            };
-            transporter.sendMail(mailOption,function(error){
-          if(error){
-            res.status(404).json(error)
-          }else{
-            res.status(200).json("Please check your email ")
-          }
-            });          
-     }
+       const user = await model.findByIdAndUpdate(id, req.body, { new: true });
+    res.status(200).json({error: false,message: user});
 
-    } catch (error) {
-        res.status(500).json(error.message)
-    }
-}
-
-const forgotPassword = async(req,res)=>{
-    try {
-      
-        const data = await model.findOne({ _id: req.body.id });
-    console.log(data);
-    const salt = await bcrypt.genSalt(10);
-    const securePass = await bcrypt.hash(req.body.password, salt);
-     const userData = await model.findByIdAndUpdate(
-      { _id: data._id },
-      { $set: { password: securePass } },
-      { new: true }
-    );
-    res.status(200).json("Your password has been updated");
-
-    } catch (error) {
-        res.status(500).json(error.message)
-    }
-}
-
-const likeDoctor = async(req,res)=>{
-    try {
-  const {patientID,doctorID} = req.body;
-   const data = await model.findOne({_id: patientID});
-   const result = await data.favorite.includes(doctorID);
-   if(result === true){
-    res.status(400).json({error:  false,message: "Already available in the favorite list"})
-   }else{
-    await model.findByIdAndUpdate({
-        _id: data._id
-    },
-    {
-        $push: {favorite: doctorID}
-    },{new: true})
-   }
-   res.status(200).json({error: false,message: "Doctor added in the Favorite"});
-        
     } catch (error) {
         res.status(500).json({error: true,message: error.message});
     }
-};
 
-const unlikeDoctor = async(req,res)=>{
+ }
+
+ const findDoctor = async(req,res)=>{
     try {
-  const {patientID,doctorID} = req.body;
-   const data = await model.findOne({_id: patientID});
-   const result = await data.favorite.includes(doctorID);
-   if(result === true){
-       await model.findByIdAndUpdate({
-        _id: data._id
-    },
-    {
-        $pull: {favorite: doctorID}
-    },{new: true});
-    res.status(200).json({error: false,message: "Removed from  Favorite"});
-   }else{
-    res.status(200).json({error: false,message: "Favorite is empty"})
-   }
-   
- 
- 
+
+
         
     } catch (error) {
-        res.status(500).json({error: true,message: error.message});
+        res.status(500).json({error: true,message: error.message})
     }
-};
+ };
 
 
 
@@ -198,8 +124,6 @@ module.exports = {
     register,
     login,
     verifyOtp,
-    checkEmail,
-    forgotPassword,
-    likeDoctor,
-    unlikeDoctor
+    updateDoctorInfo,
+    findDoctor
 }

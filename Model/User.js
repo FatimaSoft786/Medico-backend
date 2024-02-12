@@ -22,7 +22,12 @@ otp: {
 role: {
     type: String,
     default: ""
-}
+},
+favorite: [
+   {
+    type: mongoose.Schema.Types.ObjectId,ref: "Doctor"
+   }
+],
 },{
     timestamps: true
 });
