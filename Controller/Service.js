@@ -1,4 +1,5 @@
-const model = require("../Model/Doctor");
+const model = require("../Model/DoctorServices");
+const doctors = require("../Model/Doctor");
 
 const service = async(req,res)=>{
     const {doctor_service} = req.body;
@@ -28,7 +29,7 @@ const getServices = async(req,res)=>{
 const fetchDoctors =async(req,res)=>{
     try {
         const {firstName,specialties,location} = req.body;
-        const doctors = await model.find({firstName: firstName,specialties: specialties,location: location});
+        const doctors = await doctors.find({firstName: firstName,specialties: specialties,location: location});
         res.status(200).json({error: false,doctors: doctors})
         
     } catch (error) {

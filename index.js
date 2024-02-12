@@ -11,6 +11,6 @@ app.use("/api/doctor",require("./Router/Doctor"));
 app.use("/api/service",require("./Router/Service"));
 
 app.listen(process.env.PORT,()=>{
-    console.log("SErver is connected with",process.env.PORT);
+    console.log("Server is connected with",process.env.PORT);
     connectToMongo();
 })
