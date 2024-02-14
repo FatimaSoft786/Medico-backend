@@ -17,10 +17,8 @@ const service = async(req,res)=>{
 
 const getServices = async(req,res)=>{
     try {
-        
        let check = await model.find();
        res.status(200).json({error: false,services: check})
-
     } catch (error) {
         res.status(500).json({error: false, message: error.message});
     }

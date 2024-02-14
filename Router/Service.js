@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post("/register",service);
 router.get("/fetch",getServices);
-router.get("/findDoctor",fetchDoctors);
+router.post("/findDoctor",fetchDoctors);
 
 
 module.exports = router;
