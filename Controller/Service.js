@@ -27,8 +27,8 @@ const getServices = async(req,res)=>{
 const fetchDoctors =async(req,res)=>{
     try {
         const {firstName,specialties,location} = req.body;
-        const doctors = await doctors.find({firstName: firstName,specialties: specialties,location: location});
-        res.status(200).json({error: false,doctors: doctors})
+        const doc = await doctors.find({firstName: firstName,specialties: specialties,location: location});
+        res.status(200).json({error: false,doctors: doc})
         
     } catch (error) {
         res.status(500).json({error: true,message: error.message});
