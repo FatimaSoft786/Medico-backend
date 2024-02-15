@@ -1,8 +1,16 @@
 const bcrypt = require("bcryptjs")
-const model = require("../Model/User");
+const model = require("../Model/Patient");
 const generateOTP = require("../service/generateOtp");
 const nodemailer = require("nodemailer");
 const moment = require("moment")
+const cloudinary = require("cloudinary").v2;
+  const  data =   cloudinary.config({
+    cloud_name: process.env.CLOUDNAME,
+    api_key: process.env.CLOUDKEY,
+    api_secret: process.env.CLOUDSECRET
+});
+
+
 
 let transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -192,7 +200,27 @@ const unlikeDoctor = async(req,res)=>{
     }
 };
 
+const uploadPatientPicture = async(req,res)=>{
+  try {
+    if(!req?.files.profile){
+      return res.status(400).json({error: true,message: "Please upload an image"});
+     
+    }else{
+   const file = req.files.profile;
+  
+        const result = await cloudinary.uploader.upload(file.tempFilePath,{
+            public_id: file.name,
+            resource_type: "profile",
+            folder: "Patients"
+        });
+        console.log(result);
 
+      // res.status(200).json({error: false, message: result})
+    }
+  } catch (error) {
+    res.status(500).json({error: true,message: error});
+  }
+}
 
 module.exports = {
     register,
@@ -201,5 +229,6 @@ module.exports = {
     checkEmail,
     forgotPassword,
     likeDoctor,
-    unlikeDoctor
+    unlikeDoctor,
+    uploadPatientPicture
 }

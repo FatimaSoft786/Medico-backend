@@ -1,5 +1,5 @@
 const express = require("express");
-const {register,login,verifyOtp,checkEmail,forgotPassword,likeDoctor,unlikeDoctor} = require("../Controller/User");
+const {register,login,verifyOtp,checkEmail,forgotPassword,likeDoctor,unlikeDoctor,uploadPatientPicture} = require("../Controller/Patient");
 const router = express.Router();
 router.post("/register",register);
 router.post("/login",login);
@@ -8,4 +8,5 @@ router.post("/checkEmail",checkEmail);
 router.put("/forgot",forgotPassword);
 router.post("/like",likeDoctor);
 router.post("/unlike",unlikeDoctor);
+router.post("/uploadPicture",uploadPatientPicture);
 module.exports = router;
